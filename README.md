@@ -122,6 +122,7 @@ Results on the held-out test evaluation set (150 transactions / 25% stratified s
 8. `is_night`: **0.0471** (4.7%)
 9. `device_change`: **0.0251** (2.5%)
 
+<<<<<<< HEAD
 ### Batch Decision Action Summary (600 Transactions Processed)
 
 | Operational Decision | Count | Percentage | Description |
@@ -132,6 +133,8 @@ Results on the held-out test evaluation set (150 transactions / 25% stratified s
 | **Total** | **600** | **100.0%** | Full batch evaluated with Safety Gate = `False` (Hold rate 10.2% $< 25\%$) |
 
 
+=======
+>>>>>>> d7459c8 (AI Risk Manager: fraud verifier and auto-responder agent)
 ---
 
 ## Development Debugging & What Broke

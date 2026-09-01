@@ -1,0 +1,19 @@
+# Python bytecode & caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Data & output files generated at runtime
+data/
+outputs/
+
+# Virtual environment
+.venv/
+env/
+venv/
+
+# Environment / IDE settings
+.vscode/
+.idea/
+.DS_Store
