@@ -122,6 +122,16 @@ Results on the held-out test evaluation set (150 transactions / 25% stratified s
 8. `is_night`: **0.0471** (4.7%)
 9. `device_change`: **0.0251** (2.5%)
 
+### Batch Decision Action Summary (600 Transactions Processed)
+
+| Operational Decision | Count | Percentage | Description |
+| :--- | :--- | :--- | :--- |
+| **HOLD** | **61** | **10.2%** | High-risk transactions ($\ge 0.75$) held for intervention |
+| **ESCALATE** | **62** | **10.3%** | Moderate-risk transactions ($0.40 - 0.74$) routed for step-up verification |
+| **CLEAR** | **477** | **79.5%** | Low-risk transactions ($< 0.40$) approved automatically |
+| **Total** | **600** | **100.0%** | Full batch evaluated with Safety Gate = `False` (Hold rate 10.2% $< 25\%$) |
+
+
 ---
 
 ## Development Debugging & What Broke
