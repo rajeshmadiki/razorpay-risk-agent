@@ -75,16 +75,23 @@ python src/model.py
 ```
 Trains the `RandomForestClassifier`, displays test performance metrics (Precision, Recall, F1), and outputs feature importances.
 
-### 3. Run Fraud Auto-Responder Agent
+### 4. Launch Interactive Web Dashboard
 ```bash
-python src/agent.py
+streamlit run app.py
 ```
-Processes the transaction batch, computes risk scores, applies thresholding and the 25% safety rate-limiting gate, and exports decision logs to `outputs/audit_trail.csv`.
+Launches a modern, interactive Streamlit web dashboard for real-time risk decisioning, single transaction analysis, batch dataset evaluation, and audit trail inspection.
 
-### 4. Run Unit Tests
-```bash
-python -m unittest discover -s tests
-```
+---
+
+## 🌐 Web Dashboard Overview (`app.py`)
+
+The Streamlit dashboard provides a fintech risk-monitoring interface built directly on top of the `FraudAgent` core engine:
+
+- **Single Transaction Analysis**: Interactive form allowing real-time parameter input (amount, merchant average, velocity, hour, security flags, customer tenure) to compute fraud risk scores, operational actions (`CLEAR`, `ESCALATE`, `HOLD`), top risk drivers, and safety gate status.
+- **Batch Dataset Analysis**: Execute full batch processing across dataset records, view decision breakdown charts, and inspect risk factor frequencies.
+- **Audit Trail Inspector**: Search, filter, and inspect generated decision logs from `outputs/audit_trail.csv`.
+- **System Architecture & Metrics**: Displays model performance (Precision, Recall, F1) and explains policy threshold rules.
+
 
 ---
 
@@ -123,6 +130,9 @@ Results on the held-out test evaluation set (150 transactions / 25% stratified s
 9. `device_change`: **0.0251** (2.5%)
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> 17da914 (Add buildathon risk operations dashboard)
 ### Batch Decision Action Summary (600 Transactions Processed)
 
 | Operational Decision | Count | Percentage | Description |
@@ -133,8 +143,11 @@ Results on the held-out test evaluation set (150 transactions / 25% stratified s
 | **Total** | **600** | **100.0%** | Full batch evaluated with Safety Gate = `False` (Hold rate 10.2% $< 25\%$) |
 
 
+<<<<<<< HEAD
 =======
 >>>>>>> d7459c8 (AI Risk Manager: fraud verifier and auto-responder agent)
+=======
+>>>>>>> 17da914 (Add buildathon risk operations dashboard)
 ---
 
 ## Development Debugging & What Broke
