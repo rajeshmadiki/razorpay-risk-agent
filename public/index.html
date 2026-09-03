@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Razorpay Risk Agent - Vercel Deployment</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 antialiased p-4 min-h-screen">
+  
+  <div class="max-w-6xl mx-auto space-y-4">
+
+    <!-- Header Section -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-slate-800 pb-3 gap-3">
+      <div>
+        <div class="text-xs font-mono font-bold tracking-widest text-sky-400 uppercase">RISK OPERATIONS CONSOLE</div>
+        <h1 class="text-2xl font-extrabold text-white tracking-tight">Razorpay Risk Agent</h1>
+        <p class="text-xs text-slate-400">Fraud Verification & Automated Operational Risk Decisioning (Vercel Live)</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-2 bg-emerald-950/80 text-emerald-400 text-xs font-mono font-semibold px-3 py-1.5 rounded-md border border-emerald-800">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          VERCEL DEPLOYMENT ONLINE
+        </span>
+      </div>
+    </div>
+
+    <!-- Quick Scenarios -->
+    <div class="grid grid-cols-3 gap-3">
+      <button onclick="loadScenario('clear')" class="bg-emerald-950/40 hover:bg-emerald-900/50 text-emerald-400 text-xs font-mono font-semibold py-2 px-3 rounded-lg border border-emerald-900 transition text-center">
+        ⚡ Load CLEAR Scenario (Low Risk)
+      </button>
+      <button onclick="loadScenario('escalate')" class="bg-amber-950/40 hover:bg-amber-900/50 text-amber-400 text-xs font-mono font-semibold py-2 px-3 rounded-lg border border-amber-900 transition text-center">
+        ⚠️ Load ESCALATE Scenario (Med Risk)
+      </button>
+      <button onclick="loadScenario('hold')" class="bg-rose-950/40 hover:bg-rose-900/50 text-rose-400 text-xs font-mono font-semibold py-2 px-3 rounded-lg border border-rose-900 transition text-center">
+        ⛔ Load HOLD Scenario (High Risk)
+      </button>
+    </div>
+
+    <!-- Main Console Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      
+      <!-- Input Panel (Left) -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
+        <div class="text-xs font-mono font-bold text-slate-300 uppercase border-b border-slate-800 pb-2">
+          💳 Transaction Signals Input
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Transaction ID</label>
+          <input type="text" id="txn_id" value="TXN_9999" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Amount ($)</label>
+            <input type="number" id="amount" value="350" oninput="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Merchant Avg ($)</label>
+            <input type="number" id="merchant_avg" value="50" oninput="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Hour of Day (0-23)</label>
+            <input type="range" id="hour_of_day" min="0" max="23" value="2" oninput="document.getElementById('hour_val').innerText=this.value; recalculate()" class="w-full accent-sky-500">
+            <span class="text-[10px] text-slate-500 font-mono">Hour: <span id="hour_val">2</span>:00</span>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Velocity (txns last 1hr)</label>
+            <input type="number" id="velocity" min="1" max="20" value="5" oninput="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Location Mismatch</label>
+            <select id="location_mismatch" onchange="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+              <option value="No">No</option>
+              <option value="Yes" selected>Yes</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-400 mb-1">Device Change</label>
+            <select id="device_change" onchange="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+              <option value="No">No</option>
+              <option value="Yes" selected>Yes</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-medium text-slate-400 mb-1">Customer Tenure (days)</label>
+          <input type="number" id="tenure_days" value="15" oninput="recalculate()" class="w-full bg-slate-950 border border-slate-700 rounded-md px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-sky-500">
+        </div>
+
+        <button onclick="evaluateAndRecord()" class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs py-2.5 rounded-lg transition shadow-md">
+          ⚡ ANALYZE RISK DECISION
+        </button>
+      </div>
+
+      <!-- Decision Result Panel (Right) -->
+      <div class="lg:col-span-6 bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
+        <div class="text-xs font-mono font-bold text-slate-300 uppercase border-b border-slate-800 pb-2">
+          🎯 Risk Verification Result
+        </div>
+
+        <!-- Dynamic Decision Banner -->
+        <div id="decision_banner" class="rounded-lg p-3.5 text-center font-mono font-extrabold text-lg border transition">
+          --
+        </div>
+
+        <!-- Metric Grid -->
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg">
+            <div id="prob_metric" class="text-lg font-mono font-bold text-white">0%</div>
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Fraud Prob</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg">
+            <div id="decision_metric" class="text-lg font-mono font-bold text-white">--</div>
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Decision</div>
+          </div>
+          <div class="bg-slate-950 border border-slate-800 p-2.5 rounded-lg">
+            <div id="category_metric" class="text-lg font-mono font-bold text-white">--</div>
+            <div class="text-[10px] text-slate-400 font-semibold uppercase">Risk Level</div>
+          </div>
+        </div>
+
+        <!-- Meter Track -->
+        <div class="space-y-1">
+          <div class="flex justify-between text-[11px] font-mono text-slate-400 font-semibold">
+            <span>PROBABILITY RISK METER</span>
+            <span id="meter_pct" class="text-sky-400">0%</span>
+          </div>
+          <div class="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden relative border border-slate-800">
+            <div id="meter_bar" class="h-full bg-sky-500 transition-all duration-300" style="width: 0%"></div>
+          </div>
+          <div class="flex justify-between text-[9px] text-slate-500 font-mono">
+            <span>0% (CLEAR)</span>
+            <span>40% (ESCALATE)</span>
+            <span>75% (HOLD)</span>
+          </div>
+        </div>
+
+        <!-- Risk Intelligence Drivers -->
+        <div class="space-y-2 pt-2 border-t border-slate-800">
+          <div class="text-xs font-mono font-bold text-slate-300">📊 Risk Signal Breakdown</div>
+          
+          <div class="space-y-1.5 text-xs">
+            <div class="flex justify-between text-slate-300">
+              <span>01 Amount Deviation Ratio</span>
+              <span id="dev_val" class="font-mono text-sky-400">1.0x</span>
+            </div>
+            <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+              <div id="dev_bar" class="h-full bg-sky-500" style="width: 20%"></div>
+            </div>
+
+            <div class="flex justify-between text-slate-300">
+              <span>02 Velocity (Last 1hr)</span>
+              <span id="vel_val" class="font-mono text-amber-400">1 txn</span>
+            </div>
+            <div class="w-full bg-slate-950 h-1.5 rounded-full overflow-hidden">
+              <div id="vel_bar" class="h-full bg-amber-500" style="width: 10%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Recent Session Activity Log -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-4 shadow-lg space-y-2">
+      <div class="text-xs font-mono font-bold text-slate-300 uppercase">
+        🕒 Recent Session Evaluations Log
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs font-mono">
+          <thead class="bg-slate-950 text-slate-400 text-[10px] uppercase">
+            <tr>
+              <th class="p-2">Time</th>
+              <th class="p-2">Transaction ID</th>
+              <th class="p-2">Amount</th>
+              <th class="p-2">Fraud Prob</th>
+              <th class="p-2">Decision</th>
+            </tr>
+          </thead>
+          <tbody id="activity_log" class="divide-y divide-slate-800 text-slate-300">
+            <tr>
+              <td colspan="5" class="p-3 text-center text-slate-500 italic">No transactions evaluated in current session yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    function calculateFraudScore(amt, merchantAvg, hour, vel, loc, dev, tenure) {
+      let devRatio = merchantAvg > 0 ? (amt / merchantAvg) : 1.0;
+      let isNight = (hour >= 22 || hour <= 5) ? 1 : 0;
+      let locFlag = loc === 'Yes' ? 1 : 0;
+      let devFlag = dev === 'Yes' ? 1 : 0;
+
+      let score = 0.05 + 
+                  Math.min(devRatio / 10.0, 0.45) + 
+                  (isNight * 0.12) + 
+                  Math.min(vel / 15.0, 0.20) + 
+                  (locFlag * 0.12) + 
+                  (devFlag * 0.10) + 
+                  (tenure < 30 ? 0.08 : 0.0);
+      
+      score = Math.min(Math.max(score, 0.02), 0.98);
+      return { score: score, devRatio: devRatio };
+    }
+
+    function recalculate() {
+      let amt = parseFloat(document.getElementById('amount').value) || 10;
+      let merchantAvg = parseFloat(document.getElementById('merchant_avg').value) || 10;
+      let hour = parseInt(document.getElementById('hour_of_day').value);
+      let vel = parseInt(document.getElementById('velocity').value) || 1;
+      let loc = document.getElementById('location_mismatch').value;
+      let dev = document.getElementById('device_change').value;
+      let tenure = parseInt(document.getElementById('tenure_days').value) || 10;
+
+      let res = calculateFraudScore(amt, merchantAvg, hour, vel, loc, dev, tenure);
+      let prob = res.score;
+      let pct = (prob * 100).toFixed(1);
+
+      let decision = "CLEAR";
+      let bannerClass = "bg-emerald-950/80 text-emerald-400 border-emerald-800";
+      let bannerLabel = "● VERIFIED — CLEAR";
+      let riskLevel = "LOW RISK";
+
+      if (prob >= 0.75) {
+        decision = "HOLD";
+        bannerClass = "bg-rose-950/80 text-rose-400 border-rose-800 animate-pulse";
+        bannerLabel = "● HIGH RISK — HOLD";
+        riskLevel = "HIGH RISK";
+      } else if (prob >= 0.40) {
+        decision = "ESCALATE";
+        bannerClass = "bg-amber-950/80 text-amber-400 border-amber-800";
+        bannerLabel = "● REVIEW REQUIRED — ESCALATE";
+        riskLevel = "MEDIUM RISK";
+      }
+
+      document.getElementById('decision_banner').className = "rounded-lg p-3.5 text-center font-mono font-extrabold text-sm border transition " + bannerClass;
+      document.getElementById('decision_banner').innerText = bannerLabel;
+
+      document.getElementById('prob_metric').innerText = pct + "%";
+      document.getElementById('decision_metric').innerText = decision;
+      document.getElementById('category_metric').innerText = riskLevel;
+
+      document.getElementById('meter_pct').innerText = pct + "%";
+      document.getElementById('meter_bar').style.width = pct + "%";
+
+      document.getElementById('dev_val').innerText = res.devRatio.toFixed(1) + "x";
+      document.getElementById('dev_bar').style.width = Math.min((res.devRatio / 8.0) * 100, 100) + "%";
+
+      document.getElementById('vel_val').innerText = vel + " txns";
+      document.getElementById('vel_bar').style.width = Math.min((vel / 12.0) * 100, 100) + "%";
+
+      return { txnId: document.getElementById('txn_id').value, amount: amt, probPct: pct + "%", decision: decision };
+    }
+
+    let sessionLogs = [];
+    function evaluateAndRecord() {
+      let r = recalculate();
+      let now = new Date().toLocaleTimeString();
+
+      sessionLogs.unshift({ time: now, id: r.txnId, amount: "$" + r.amount.toFixed(2), prob: r.probPct, decision: r.decision });
+      
+      let html = "";
+      sessionLogs.forEach(l => {
+        let badge = l.decision === "HOLD" ? "text-rose-400 font-bold" : (l.decision === "ESCALATE" ? "text-amber-400 font-bold" : "text-emerald-400 font-bold");
+        html += `<tr>
+          <td class="p-2">${l.time}</td>
+          <td class="p-2 font-bold">${l.id}</td>
+          <td class="p-2">${l.amount}</td>
+          <td class="p-2">${l.prob}</td>
+          <td class="p-2 ${badge}">${l.decision}</td>
+        </tr>`;
+      });
+      document.getElementById('activity_log').innerHTML = html;
+    }
+
+    function loadScenario(type) {
+      if (type === 'clear') {
+        document.getElementById('txn_id').value = "TXN_CLEAR_01";
+        document.getElementById('amount').value = 25;
+        document.getElementById('merchant_avg').value = 50;
+        document.getElementById('hour_of_day').value = 14;
+        document.getElementById('hour_val').innerText = 14;
+        document.getElementById('velocity').value = 1;
+        document.getElementById('location_mismatch').value = "No";
+        document.getElementById('device_change').value = "No";
+        document.getElementById('tenure_days').value = 600;
+      } else if (type === 'escalate') {
+        document.getElementById('txn_id').value = "TXN_ESC_02";
+        document.getElementById('amount').value = 450;
+        document.getElementById('merchant_avg').value = 50;
+        document.getElementById('hour_of_day').value = 1;
+        document.getElementById('hour_val').innerText = 1;
+        document.getElementById('velocity').value = 4;
+        document.getElementById('location_mismatch').value = "Yes";
+        document.getElementById('device_change').value = "No";
+        document.getElementById('tenure_days').value = 45;
+      } else if (type === 'hold') {
+        document.getElementById('txn_id').value = "TXN_HOLD_03";
+        document.getElementById('amount').value = 1280;
+        document.getElementById('merchant_avg').value = 200;
+        document.getElementById('hour_of_day').value = 3;
+        document.getElementById('hour_val').innerText = 3;
+        document.getElementById('velocity').value = 8;
+        document.getElementById('location_mismatch').value = "Yes";
+        document.getElementById('device_change').value = "Yes";
+        document.getElementById('tenure_days').value = 15;
+      }
+      recalculate();
+    }
+
+    recalculate();
+  </script>
+</body>
+</html>
