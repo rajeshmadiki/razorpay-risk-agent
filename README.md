@@ -2,7 +2,12 @@
 
 An end-to-end Python system for automated fraud decisioning, auto-response policy enforcement, and audit trail logging. Unlike standard classifiers that only output probabilities, this agent enforces operational decision rules, risk explanations, and a defensive rate-limiting safety gate.
 
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://razorpay-risk-agent.streamlit.app/)
+
+> **🌐 Live Web App**: [https://razorpay-risk-agent.streamlit.app/](https://razorpay-risk-agent.streamlit.app/)
+
 ---
+
 
 ## Key Features
 
