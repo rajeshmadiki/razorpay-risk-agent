@@ -4,9 +4,9 @@
 
 An end-to-end defensive fraud-risk decision engine for Razorpay AI Buildathon 2026 Track 02. It combines a Random Forest fraud classifier, explicit risk thresholds, a safety gate, explainable risk signals, FastAPI APIs, and a tamper-evident decision audit trail using synthetic transaction data.
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
+[![Streamlit App]](https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
 
-> **🌐 Live Web App**: [https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/](https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)  
+> **🌐 Live Web App**:[https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/] (https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
 > **💻 GitHub Repository**: [https://github.com/rajeshmadiki/razorpay-risk-agent](https://github.com/rajeshmadiki/razorpay-risk-agent)
 
 ---
