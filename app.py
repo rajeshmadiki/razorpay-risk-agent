@@ -1,7 +1,10 @@
 import os
 import sys
 import json
+import time
+import threading
 import datetime
+import uvicorn
 import pandas as pd
 import numpy as np
 import requests
@@ -14,6 +17,7 @@ if PROJECT_ROOT not in sys.path:
 
 from src.model import load_data, train_fraud_model, FEATURE_COLS
 from src.agent import FraudAgent, run_agent_batch, verify_audit_chain
+from backend.main import app as fastapi_app
 
 
 
@@ -37,6 +41,24 @@ def check_backend_health():
     except Exception:
         pass
     return None, False
+
+def start_fastapi_server_background():
+    def run_server():
+        try:
+            uvicorn.run(fastapi_app, host="127.0.0.1", port=8000, log_level="error")
+        except Exception:
+            pass
+
+    t = threading.Thread(target=run_server, daemon=True)
+    t.start()
+    time.sleep(1.2)
+
+def ensure_backend_health():
+    health, is_online = check_backend_health()
+    if is_online:
+        return health, True
+    start_fastapi_server_background()
+    return check_backend_health()
 
 # --- RESTRAINED CINEMATIC FINTECH EDITORIAL VISUAL SYSTEM ---
 st.markdown(r"""
@@ -594,8 +616,8 @@ except Exception as err:
     st.error(f"Engine Load Error: Could not initialize risk engine. Details: {err}")
     st.stop()
 
-# Check Backend Health
-backend_health, is_backend_online = check_backend_health()
+# Check & Ensure Backend Health
+backend_health, is_backend_online = ensure_backend_health()
 
 # --- SIDEBAR NAVIGATION ---
 st.sidebar.markdown(f"""
