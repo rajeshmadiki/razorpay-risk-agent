@@ -14,7 +14,8 @@ from backend.schemas import (
     TransactionInput,
     RiskScoreResponse,
     BatchResponse,
-    EvaluationResponse
+    EvaluationResponse,
+    AuditVerifyResponse
 )
 from backend.services import RiskEngineService
 
@@ -103,6 +104,20 @@ def get_audit_trail(
             detail=f"Audit Log Retrieval Error: {str(err)}"
         )
 
+@app.get("/api/v1/audit/verify", response_model=AuditVerifyResponse, tags=["Audit Evidence"])
+def verify_audit_trail():
+    """
+    Cryptographically verify the SHA-256 integrity of audit records log for tamper detection.
+    """
+    try:
+        result = RiskEngineService.verify_audit_trail()
+        return AuditVerifyResponse(**result)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Audit Verification Error: {str(err)}"
+        )
+
 @app.get("/api/v1/evaluation", response_model=EvaluationResponse, tags=["Model Intelligence"])
 def get_evaluation():
     """
@@ -116,3 +131,4 @@ def get_evaluation():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Evaluation Metrics Retrieval Error: {str(err)}"
         )
+

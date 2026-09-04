@@ -32,6 +32,8 @@ class RiskScoreResponse(BaseModel):
     customer_tenure_days: int
     fraud_probability: float
     decision: str
+    original_decision: str
+    override_reason: str
     risk_level: str
     top_risk_factors: List[str]
     thresholds: Dict[str, str]
@@ -49,6 +51,7 @@ class BatchResponse(BaseModel):
     safety_gate_triggered: bool
     running_hold_rate: float
     limit_hold_rate: float
+    audit_chain_valid: bool
 
 class EvaluationResponse(BaseModel):
     precision: float
@@ -57,3 +60,10 @@ class EvaluationResponse(BaseModel):
     accuracy: float
     evaluation_split: str
     feature_importances: Dict[str, float]
+
+class AuditVerifyResponse(BaseModel):
+    is_valid: bool = Field(..., example=True)
+    total_records: int = Field(..., example=600)
+    tampered_index: Optional[int] = Field(None, example=None)
+    message: str = Field(..., example="Audit chain integrity verified. All 600 records cryptographically validated.")
+

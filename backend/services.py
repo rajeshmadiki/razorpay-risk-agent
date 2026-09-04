@@ -9,7 +9,7 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from src.model import load_data, train_fraud_model, FEATURE_COLS
-from src.agent import FraudAgent, run_agent_batch
+from src.agent import FraudAgent, run_agent_batch, verify_audit_chain
 
 class RiskEngineService:
     _instance = None
@@ -67,7 +67,7 @@ class RiskEngineService:
             "customer_tenure_days": tenure
         })
 
-        prob, decision, top_feature = agent.evaluate_transaction(input_row)
+        prob, decision, top_feature, orig_decision, override_reason = agent.evaluate_transaction(input_row, is_stateful=False)
 
         risk_level = "HIGH RISK" if decision == "HOLD" else ("MEDIUM RISK" if decision == "ESCALATE" else "LOW RISK")
         
@@ -92,6 +92,8 @@ class RiskEngineService:
             "customer_tenure_days": tenure,
             "fraud_probability": round(prob, 4),
             "decision": decision,
+            "original_decision": orig_decision,
+            "override_reason": override_reason,
             "risk_level": risk_level,
             "top_risk_factors": top_signals,
             "thresholds": {
@@ -115,6 +117,7 @@ class RiskEngineService:
         clears = int((audit_df["decision"] == "CLEAR").sum())
 
         hold_rate = holds / total_txns if total_txns > 0 else 0.0
+        verify_res = verify_audit_chain(audit_df)
 
         return {
             "total_transactions": total_txns,
@@ -126,7 +129,8 @@ class RiskEngineService:
             "hold_percentage": round((holds / total_txns) * 100, 2),
             "safety_gate_triggered": batch_agent.gate_triggered,
             "running_hold_rate": round(hold_rate, 4),
-            "limit_hold_rate": 0.25
+            "limit_hold_rate": 0.25,
+            "audit_chain_valid": verify_res.get("is_valid", False)
         }
 
     @classmethod
@@ -145,6 +149,11 @@ class RiskEngineService:
         return audit_df.to_dict(orient="records")
 
     @classmethod
+    def verify_audit_trail(cls) -> Dict[str, Any]:
+        output_path = os.path.join(PROJECT_ROOT, "outputs", "audit_trail.csv")
+        return verify_audit_chain(output_path)
+
+    @classmethod
     def get_evaluation_metrics(cls) -> Dict[str, Any]:
         agent, metrics, feat_importances, df = cls.get_agent()
         return {
@@ -155,3 +164,4 @@ class RiskEngineService:
             "evaluation_split": "25% Stratified Held-out Test Set",
             "feature_importances": {k: round(v, 4) for k, v in feat_importances.items()}
         }
+

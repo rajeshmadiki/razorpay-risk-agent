@@ -1,0 +1,16 @@
+{
+  "precision": 0.5,
+  "recall": 0.4782608695652174,
+  "f1": 0.4888888888888889,
+  "accuracy": 0.8466666666666667,
+  "confusion_matrix": {
+    "tn": 116,
+    "fp": 11,
+    "fn": 12,
+    "tp": 11
+  },
+  "test_size": 150,
+  "fraud_count": 23,
+  "model_version": "fraud-rf-v1",
+  "random_seed": 42
+}

@@ -79,5 +79,16 @@ class TestBackendAPI(unittest.TestCase):
         self.assertIn("recall", data)
         self.assertIn("f1_score", data)
 
+    def test_07_audit_verify_endpoint(self):
+        # Run batch endpoint to ensure audit log is populated with cryptographic hashes
+        self.client.post("/api/v1/risk/batch")
+        response = self.client.get("/api/v1/audit/verify")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data["is_valid"])
+        self.assertIsNone(data["tampered_index"])
+        self.assertGreater(data["total_records"], 0)
+
 if __name__ == "__main__":
     unittest.main()
+

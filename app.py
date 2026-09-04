@@ -11,13 +11,17 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-# Import existing domain logic without modifying core decision algorithms
+import importlib
 try:
+    import src.agent
+    importlib.reload(src.agent)
     from src.model import load_data, train_fraud_model, FEATURE_COLS
-    from src.agent import FraudAgent, run_agent_batch
+    from src.agent import FraudAgent, run_agent_batch, verify_audit_chain
 except Exception as e:
     st.error(f"Initialization Error: Unable to import core risk agent modules. Details: {e}")
     st.stop()
+
+
 
 # Streamlit Page Configuration
 st.set_page_config(
@@ -626,8 +630,9 @@ else:
 
 st.sidebar.markdown(f"""
 <div style="margin-top: 10px; font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: var(--text-secondary);">
-  • <b>MODEL:</b> RandomForest<br>
+  • <b>MODEL VER:</b> fraud-rf-v1 (RandomForest)<br>
   • <b>API:</b> {'FastAPI (Port 8000)' if is_backend_online else 'Direct Local Engine'}<br>
+  • <b>AUDIT:</b> SHA-256 Cryptographic Chain<br>
   • <b>MODE:</b> Defense-Only<br>
   • <b>DATASET:</b> 600 Records (15.5% Fraud)
 </div>
@@ -644,11 +649,12 @@ if page == "01  RISK CONSOLE":
             <span class="sys-status-pill"><span class="pulse-dot"></span> {'FASTAPI BACKEND ONLINE' if is_backend_online else 'LOCAL PYTHON ENGINE ONLINE'}</span>
         </div>
         <div class="system-bar-right">
-            <span class="meta-tag">MODEL / RANDOMFOREST</span>
+            <span class="meta-tag">MODEL / fraud-rf-v1</span>
             <span class="meta-tag">BACKEND / FASTAPI</span>
             <span class="meta-tag">MODE / DEFENSE-ONLY</span>
         </div>
     </div>
+
 
     <div class="hero-container">
         <div class="hero-eyebrow">01 / RISK OPERATIONS</div>
@@ -1047,6 +1053,7 @@ elif page == "02  BATCH ANALYSIS":
         with ev_col1:
             st.markdown("#### MODEL EVALUATION EVIDENCE (`MEASURED`)")
             st.markdown(f"""
+            - **Model Identifier**: `fraud-rf-v1` (RandomForestClassifier)
             - **Precision**: `{model_metrics['precision']:.4f}` ({model_metrics['precision']*100:.1f}%)
             - **Recall**: `{model_metrics['recall']:.4f}` ({model_metrics['recall']*100:.1f}%)
             - **F1 Score**: `{model_metrics['f1']:.4f}` ({model_metrics['f1']*100:.1f}%)
@@ -1066,6 +1073,15 @@ elif page == "02  BATCH ANALYSIS":
             - **`MEASURED + ASSUMED` FP Friction Cost**: `$55.00`
             - **`MEASURED + ASSUMED` Net Defense ROI**: **`+$1,210.00 Saved`**
             """)
+
+        # THRESHOLD SENSITIVITY ANALYSIS TABLE
+        thresh_csv = os.path.join(PROJECT_ROOT, "outputs", "threshold_analysis.csv")
+        if os.path.exists(thresh_csv):
+            st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown("#### THRESHOLD SENSITIVITY ANALYSIS (`EVALUATED AT PROB 0.40 – 0.90`)")
+            thresh_df = pd.read_csv(thresh_csv)
+            st.dataframe(thresh_df, use_container_width=True, height=220)
+            st.caption("Empirical threshold sensitivity analysis evaluating precision, recall, F1, accuracy, and population intervention rates across policy thresholds.")
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -1116,7 +1132,7 @@ elif page == "03  AUDIT LEDGER":
     <div class="hero-container">
         <div class="hero-eyebrow">03 / EVIDENCE</div>
         <h1 class="hero-display-title">AUDIT<br>LEDGER</h1>
-        <p class="hero-lead">Traceable compliance record exported to outputs/audit_trail.csv.</p>
+        <p class="hero-lead">Traceable compliance record exported to outputs/audit_trail.csv with SHA-256 tamper-evident verification.</p>
     </div>
     <hr class="hero-divider">
     """, unsafe_allow_html=True)
@@ -1125,20 +1141,43 @@ elif page == "03  AUDIT LEDGER":
     if os.path.exists(audit_file):
         audit_df = pd.read_csv(audit_file)
 
+        # Cryptographic Chain Verification Display
+        verify_res = verify_audit_chain(audit_df)
+        is_valid_chain = verify_res.get("is_valid", False)
+
+        st.markdown(f'''
+        <div class="editorial-card" style="margin-bottom: 18px; border-left: 4px solid {'var(--clear-text)' if is_valid_chain else 'var(--hold-text)'};">
+            <div class="editorial-card-label">CRYPTOGRAPHIC AUDIT CHAIN VERIFICATION</div>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:1.1rem; font-weight:700; color:{'var(--clear-text)' if is_valid_chain else 'var(--hold-text)'}; margin-top: 4px;">
+                {'🔒 INTEGRITY VERIFIED (SHA-256 AUDIT CHAIN VALID)' if is_valid_chain else '⚠️ TAMPER DETECTED IN AUDIT LOG'}
+            </div>
+            <div class="editorial-card-sub">{verify_res['message']}</div>
+        </div>
+        ''', unsafe_allow_html=True)
+
+        if st.button("VERIFY CRYPTOGRAPHIC AUDIT CHAIN INTEGRITY", use_container_width=True):
+            res = verify_audit_chain(audit_file)
+            if res["is_valid"]:
+                st.success(f"✅ SHA-256 Audit Chain Verification Passed! Verified {res['total_records']} sequential audit hash blocks with zero tamper events.")
+            else:
+                st.error(f"❌ SHA-256 Tamper Alert: {res['message']}")
+
         af1, af2 = st.columns(2)
         with af1:
             selected_decision = st.multiselect("Filter by Decision Category", options=["CLEAR", "ESCALATE", "HOLD"], default=["CLEAR", "ESCALATE", "HOLD"])
         with af2:
             search_id = st.text_input("Search Transaction ID", value="")
 
-        filtered_df = audit_df[audit_df["decision"].isin(selected_decision)]
+        decision_col_name = "final_decision" if "final_decision" in audit_df.columns else "decision"
+        filtered_df = audit_df[audit_df[decision_col_name].isin(selected_decision)]
         if search_id.strip():
-            filtered_df = filtered_df[filtered_df["transaction_id"].str.contains(search_id.strip(), case=False)]
+            filtered_df = filtered_df[filtered_df["transaction_id"].astype(str).str.contains(search_id.strip(), case=False)]
 
         st.dataframe(filtered_df, use_container_width=True, height=480)
-        st.caption(f"Displaying {len(filtered_df)} of {len(audit_df)} total log records.")
+        st.caption(f"Displaying {len(filtered_df)} of {len(audit_df)} total log records with cryptographic SHA-256 record hashes.")
     else:
         st.warning("Audit trail log file not found. Execute a batch evaluation to generate records.")
+
 
 # --- WORKSPACE 4: 04  SYSTEM ARCHITECTURE ---
 elif page == "04  SYSTEM ARCHITECTURE":
