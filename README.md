@@ -195,7 +195,7 @@ $$\text{Illustrative Net Defense Impact} = \text{Fraud Loss Prevented} - \text{F
 | **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
 | **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
 | **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
-| **Illustrative Net Defense Impact** | **`+$1,210.00`** | Net financial loss reduction |
+| **Illustrative Net Defense Impact** | **`+$1,210.00`** | Illustrative net defense impact under the stated assumptions |
 
 > ⚡ *Illustrative evaluation assumption — not observed Razorpay production savings.*
 
@@ -211,21 +211,18 @@ record_hash = sha256(payload)
 
 ## 📡 FastAPI Backend Service Specifications
 
-The backend service is structured under `backend/main.py` exposing REST endpoints:
-
-| Endpoint | Method | Description | Response Schema |
-| :--- | :--- | :--- | :--- |
-| `/api/v1/health` | `GET` | System health status, version, and model metadata | `HealthResponse` |
-| `/api/v1/risk/score` | `POST` | Evaluate single transaction risk score & decision | `RiskScoreResponse` |
-| `/api/v1/risk/batch` | `POST` | Execute population batch evaluation across dataset | `BatchResponse` |
-| `/api/v1/audit` | `GET` | Query compliance audit records from log | `List[Dict]` |
-| `/api/v1/audit/verify` | `GET` | Verify cryptographic SHA-256 audit chain integrity | `AuditVerifyResponse` |
-| `/api/v1/evaluation` | `GET` | Fetch held-out model evaluation metrics & importances | `EvaluationResponse` |
-| `/api/v1/evaluation/cost` | `GET` | Fetch false-positive cost analysis & net impact | `CostAnalysisResponse` |
-| `/docs` | `GET` | Interactive Swagger OpenAPI UI documentation | HTML |
-| `/openapi.json` | `GET` | Machine-readable OpenAPI spec | JSON |
-
----
+| Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
+| :--- | :--- | :--- |
+| **Held-out Test Transactions** | `150` | 25% Stratified split baseline |
+| **True Positives (TP)** | `11` | True fraud correctly caught |
+| **False Positives (FP)** | `11` | Legitimate transactions flagged for review |
+| **False Negatives (FN)** | `12` | Uncaught fraud resulting in direct loss |
+| **Assumed Average Order Value** | `$100.00` | Standard order value assumption |
+| **Assumed Chargeback & Fee** | `$15.00` | Penalty fee per uncaught fraud incident |
+| **Assumed FP Friction Penalty** | `$5.00` | Unit friction penalty per escalated legit order |
+| **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
+| **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
+| **Illustrative Net Defense Impact** | **`+$1,210.00`** | Illustrative net defense impact under the stated assumptions |
 
 ## 💻 Streamlit Operations Dashboard
 
