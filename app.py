@@ -400,18 +400,19 @@ st.markdown(r"""
         font-weight: bold;
     }
 
-    /* Code Blocks & Flowchart Pre-formatted Diagrams Theme Safety */
-    code, pre, div[data-testid="stMarkdownContainer"] pre, div[data-testid="stMarkdownContainer"] code, .stCodeBlock, div[data-testid="stCodeBlock"] {
+    /* Code Blocks & Flowchart Pre-formatted Diagrams Universal Theme Safety */
+    code, pre, .stCodeBlock, div[data-testid="stCodeBlock"],
+    div[data-testid="stMarkdownContainer"] pre,
+    div[data-testid="stMarkdownContainer"] code,
+    div[data-testid="stMarkdownContainer"] pre *,
+    div[data-testid="stMarkdownContainer"] code *,
+    div[data-testid="stCodeBlock"] *,
+    .stCodeBlock *, code *, pre * {
         background-color: var(--bg-card) !important;
         color: var(--text-primary) !important;
-        border: 1px solid var(--border-color) !important;
+        border-color: var(--border-color) !important;
     }
-    div[data-testid="stMarkdownContainer"] pre code span,
-    div[data-testid="stMarkdownContainer"] pre span,
-    div[data-testid="stCodeBlock"] span,
-    code span {
-        color: var(--text-primary) !important;
-    }
+
 
 
     /* Custom Meter Styling */
