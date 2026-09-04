@@ -647,7 +647,7 @@ if page == "01  RISK CONSOLE":
         </div>
         <div class="system-bar-right">
             <span class="meta-tag">MODEL / fraud-rf-v1</span>
-            <span class="meta-tag">BACKEND / FASTAPI</span>
+            <span class="meta-tag">{'BACKEND / FASTAPI' if is_backend_online else 'ENGINE / DIRECT PYTHON'}</span>
             <span class="meta-tag">MODE / DEFENSE-ONLY</span>
         </div>
     </div>
