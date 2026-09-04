@@ -6,7 +6,7 @@ An end-to-end defensive fraud-risk decision engine for Razorpay AI Buildathon 20
 
 [![Streamlit App]](https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
 
-> **🌐 Live Web App**:[https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/] (https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
+> **🌐 Live Web App**:(https://razorpay-risk-agent-p5m5zgofer38zdekzzjtgn.streamlit.app/)
 > **💻 GitHub Repository**: [https://github.com/rajeshmadiki/razorpay-risk-agent](https://github.com/rajeshmadiki/razorpay-risk-agent)
 
 ---
