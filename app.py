@@ -31,30 +31,118 @@ st.markdown(r"""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Roboto+Mono:wght@400;500;600;700&display=swap');
 
-    /* Global Dark Canvas */
-    .stApp {
-        background-color: #0d1117 !important;
-        color: #f0f6fc !important;
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    /* --- THEME CSS VARIABLES --- */
+    :root, [data-theme="dark"] {
+        --bg-canvas: #0d1117;
+        --bg-card: #161b22;
+        --bg-sidebar: #010409;
+        --border-color: #30363d;
+        --border-subtle: #21262d;
+        --text-primary: #f0f6fc;
+        --text-secondary: #8b949e;
+        --text-heading: #ffffff;
+        --accent-blue: #58a6ff;
+        --meter-track: #21262d;
+        --input-bg: #161b22;
+        --input-text: #f0f6fc;
+        --input-border: #30363d;
+        --chip-bg: #161b22;
+        --clear-bg: #0d2d1d;
+        --clear-border: #1b472c;
+        --clear-text: #3fb950;
+        --escalate-bg: #341a00;
+        --escalate-border: #543000;
+        --escalate-text: #d29922;
+        --hold-bg: #3c1118;
+        --hold-border: #6e1a24;
+        --hold-text: #f85149;
     }
 
-    /* Optimized Container Spacing for 1366x768 Viewports */
+    @media (prefers-color-scheme: light) {
+        :root:not([data-theme="dark"]) {
+            --bg-canvas: #f8f9fa;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f1f5f9;
+            --border-color: #e2e8f0;
+            --border-subtle: #cbd5e1;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --text-heading: #0f172a;
+            --accent-blue: #0284c7;
+            --meter-track: #e2e8f0;
+            --input-bg: #ffffff;
+            --input-text: #0f172a;
+            --input-border: #cbd5e1;
+            --chip-bg: #f1f5f9;
+            --clear-bg: #f0fdf4;
+            --clear-border: #bbf7d0;
+            --clear-text: #15803d;
+            --escalate-bg: #fffbeb;
+            --escalate-border: #fef08a;
+            --escalate-text: #b45309;
+            --hold-bg: #fef2f2;
+            --hold-border: #fecaca;
+            --hold-text: #b91c1c;
+        }
+    }
+
+    [data-theme="light"] {
+        --bg-canvas: #f8f9fa;
+        --bg-card: #ffffff;
+        --bg-sidebar: #f1f5f9;
+        --border-color: #e2e8f0;
+        --border-subtle: #cbd5e1;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-heading: #0f172a;
+        --accent-blue: #0284c7;
+        --meter-track: #e2e8f0;
+        --input-bg: #ffffff;
+        --input-text: #0f172a;
+        --input-border: #cbd5e1;
+        --chip-bg: #f1f5f9;
+        --clear-bg: #f0fdf4;
+        --clear-border: #bbf7d0;
+        --clear-text: #15803d;
+        --escalate-bg: #fffbeb;
+        --escalate-border: #fef08a;
+        --escalate-text: #b45309;
+        --hold-bg: #fef2f2;
+        --hold-border: #fecaca;
+        --hold-text: #b91c1c;
+    }
+
+    /* --- BUG 2 FIX: Streamlit Header & Top Viewport Clearance --- */
+    header[data-testid="stHeader"] {
+        background-color: transparent !important;
+        z-index: 99 !important;
+        pointer-events: none !important;
+    }
+    header[data-testid="stHeader"] * {
+        pointer-events: auto !important;
+    }
+
     div.block-container {
-        padding-top: 1.1rem !important;
+        padding-top: 3.75rem !important;
         padding-bottom: 2rem !important;
         max-width: 1320px !important;
     }
 
-    /* Sidebar Navigation Styling */
-    section[data-testid="stSidebar"] {
-        background-color: #010409 !important;
-        border-right: 1px solid #21262d !important;
-    }
-    section[data-testid="stSidebar"] * {
-        color: #c9d1d9 !important;
+    /* --- BUG 1 FIX: Canvas & Layout Theme Styling --- */
+    .stApp {
+        background-color: var(--bg-canvas) !important;
+        color: var(--text-primary) !important;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     }
 
-    /* Force High Contrast Crisp White Headings */
+    section[data-testid="stSidebar"] {
+        background-color: var(--bg-sidebar) !important;
+        border-right: 1px solid var(--border-color) !important;
+    }
+    section[data-testid="stSidebar"] * {
+        color: var(--text-primary) !important;
+    }
+
     .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
     div[data-testid="stMarkdownContainer"] h1,
     div[data-testid="stMarkdownContainer"] h2,
@@ -62,58 +150,67 @@ st.markdown(r"""
     div[data-testid="stMarkdownContainer"] h4,
     div[data-testid="stMarkdownContainer"] h5,
     div[data-testid="stMarkdownContainer"] h6 {
-        color: #f0f6fc !important;
+        color: var(--text-heading) !important;
         font-family: 'Inter', sans-serif !important;
         font-weight: 600 !important;
     }
 
+    div[data-testid="stMarkdownContainer"] p,
+    div[data-testid="stMarkdownContainer"] span,
+    div[data-testid="stMarkdownContainer"] li {
+        color: var(--text-primary);
+    }
+
     /* Header Section */
     .header-wrapper {
-        border-bottom: 1px solid #21262d;
+        border-bottom: 1px solid var(--border-color);
         padding-bottom: 0.75rem;
         margin-bottom: 1.0rem;
+        margin-top: 0 !important;
+        position: relative;
+        z-index: 1;
     }
     .header-tag {
         font-family: 'Roboto Mono', monospace;
         font-size: 0.72rem;
         font-weight: 700;
         letter-spacing: 0.12em;
-        color: #58a6ff !important;
+        color: var(--accent-blue) !important;
         text-transform: uppercase;
         margin-bottom: 2px;
     }
     .header-title {
         font-size: 2.2rem;
         font-weight: 800;
-        color: #ffffff !important;
+        color: var(--text-heading) !important;
         letter-spacing: -0.03em;
         margin: 0;
         line-height: 1.1;
     }
     .header-desc {
         font-size: 0.9rem;
-        color: #8b949e !important;
+        color: var(--text-secondary) !important;
         margin-bottom: 0;
     }
 
-    /* Subtle Slow-Pulse Status Badge */
+    /* Status Badges */
     .status-badge {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        background-color: #0d2d1d;
-        color: #3fb950 !important;
+        background-color: var(--clear-bg);
+        color: var(--clear-text) !important;
         font-family: 'Roboto Mono', monospace;
         font-size: 0.72rem;
         font-weight: 600;
         padding: 4px 10px;
         border-radius: 6px;
-        border: 1px solid #1b472c;
+        border: 1px solid var(--clear-border);
     }
     .status-dot-pulse {
         width: 7px;
         height: 7px;
-        background-color: #2ea043;
+        background-color: var(--clear-text);
         border-radius: 50%;
         animation: pulse-slow 2.5s infinite ease-in-out;
     }
@@ -126,7 +223,7 @@ st.markdown(r"""
     .pulse-dot-red {
         width: 7px;
         height: 7px;
-        background-color: #f85149;
+        background-color: var(--hold-text);
         border-radius: 50%;
         animation: pulse-red 2.0s infinite ease-in-out;
     }
@@ -139,7 +236,7 @@ st.markdown(r"""
     .pulse-dot-amber {
         width: 7px;
         height: 7px;
-        background-color: #d29922;
+        background-color: var(--escalate-text);
         border-radius: 50%;
         animation: pulse-amber 2.5s infinite ease-in-out;
     }
@@ -152,7 +249,7 @@ st.markdown(r"""
     .dot-stable-green {
         width: 7px;
         height: 7px;
-        background-color: #3fb950;
+        background-color: var(--clear-text);
         border-radius: 50%;
     }
 
@@ -160,9 +257,9 @@ st.markdown(r"""
     .fact-chip {
         font-family: 'Roboto Mono', monospace;
         font-size: 0.7rem;
-        color: #8b949e;
-        background: #161b22;
-        border: 1px solid #30363d;
+        color: var(--text-secondary);
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         padding: 2px 8px;
         border-radius: 4px;
     }
@@ -171,33 +268,57 @@ st.markdown(r"""
     .section-title {
         font-size: 0.85rem;
         font-weight: 600;
-        color: #f0f6fc !important;
+        color: var(--text-heading) !important;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 10px;
         padding-bottom: 4px;
-        border-bottom: 1px solid #21262d;
+        border-bottom: 1px solid var(--border-color);
     }
 
-    /* Input Controls Dark Theme & Overlap Fix */
+    /* Input Controls Theme Adaptation */
     div[data-testid="stInputInstruction"] {
         position: relative !important;
         display: block !important;
         margin-top: 4px !important;
         font-size: 0.72rem !important;
-        color: #8b949e !important;
+        color: var(--text-secondary) !important;
         clear: both !important;
     }
     .stTextInput input, .stNumberInput input, .stSelectbox > div > div {
-        background-color: #161b22 !important;
-        color: #f0f6fc !important;
-        border: 1px solid #30363d !important;
+        background-color: var(--input-bg) !important;
+        color: var(--input-text) !important;
+        border: 1px solid var(--input-border) !important;
         border-radius: 6px !important;
     }
     .stTextInput label, .stNumberInput label, .stSelectbox label, .stSlider label {
-        color: #c9d1d9 !important;
+        color: var(--text-primary) !important;
         font-weight: 500 !important;
         font-size: 0.84rem !important;
+    }
+
+    /* Form and Expander styling */
+    div[data-testid="stForm"] {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 8px !important;
+    }
+    div[data-testid="stExpander"] {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
+        color: var(--text-primary) !important;
+    }
+    div[data-testid="stExpander"] summary {
+        color: var(--text-heading) !important;
+    }
+    div[data-testid="stExpander"] summary span {
+        color: var(--text-heading) !important;
+    }
+    div[data-testid="stDataFrame"] {
+        background-color: var(--bg-card) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: 6px !important;
     }
 
     /* Semantic Decision Banners */
@@ -216,25 +337,25 @@ st.markdown(r"""
         gap: 10px;
     }
     .banner-clear {
-        background-color: #0d2d1d;
-        color: #3fb950 !important;
-        border: 1px solid #1b472c;
+        background-color: var(--clear-bg);
+        color: var(--clear-text) !important;
+        border: 1px solid var(--clear-border);
     }
     .banner-escalate {
-        background-color: #341a00;
-        color: #d29922 !important;
-        border: 1px solid #543000;
+        background-color: var(--escalate-bg);
+        color: var(--escalate-text) !important;
+        border: 1px solid var(--escalate-border);
     }
     .banner-hold {
-        background-color: #3c1118;
-        color: #f85149 !important;
-        border: 1px solid #6e1a24;
+        background-color: var(--hold-bg);
+        color: var(--hold-text) !important;
+        border: 1px solid var(--hold-border);
     }
 
     /* Metric Tiles Grid */
     .metric-tile {
-        background: #161b22;
-        border: 1px solid #30363d;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         padding: 10px 8px;
         text-align: center;
@@ -243,11 +364,11 @@ st.markdown(r"""
         font-family: 'Roboto Mono', monospace;
         font-size: 1.45rem;
         font-weight: 700;
-        color: #f0f6fc !important;
+        color: var(--text-heading) !important;
     }
     .metric-label {
         font-size: 0.7rem;
-        color: #8b949e !important;
+        color: var(--text-secondary) !important;
         font-weight: 500;
         text-transform: uppercase;
         letter-spacing: 0.04em;
@@ -258,8 +379,8 @@ st.markdown(r"""
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: #161b22;
-        border: 1px solid #30363d;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         padding: 10px 14px;
         margin-bottom: 14px;
@@ -267,28 +388,43 @@ st.markdown(r"""
         font-size: 0.74rem;
     }
     .pipeline-node {
-        color: #8b949e;
+        color: var(--text-primary) !important;
         padding: 3px 8px;
         border-radius: 4px;
-        background: #0d1117;
-        border: 1px solid #21262d;
+        background: var(--bg-canvas);
+        border: 1px solid var(--border-subtle);
+        font-weight: 500;
     }
     .pipeline-arrow {
-        color: #484f58;
+        color: var(--text-secondary) !important;
         font-weight: bold;
     }
 
+    /* Code Blocks & Flowchart Pre-formatted Diagrams Theme Safety */
+    code, pre, div[data-testid="stMarkdownContainer"] pre, div[data-testid="stMarkdownContainer"] code, .stCodeBlock, div[data-testid="stCodeBlock"] {
+        background-color: var(--bg-card) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+    }
+    div[data-testid="stMarkdownContainer"] pre code span,
+    div[data-testid="stMarkdownContainer"] pre span,
+    div[data-testid="stCodeBlock"] span,
+    code span {
+        color: var(--text-primary) !important;
+    }
+
+
     /* Custom Meter Styling */
     .meter-container {
-        background: #161b22;
-        border: 1px solid #30363d;
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
         border-radius: 6px;
         padding: 12px;
         margin-bottom: 12px;
     }
     .meter-bar-track {
         height: 10px;
-        background: #21262d;
+        background: var(--meter-track);
         border-radius: 4px;
         position: relative;
         overflow: hidden;
@@ -300,8 +436,8 @@ st.markdown(r"""
         height: 100%;
         width: 100%;
     }
-    .region-low { width: 40%; background: rgba(46, 160, 67, 0.25); border-right: 1px solid #30363d; }
-    .region-med { width: 35%; background: rgba(210, 153, 34, 0.25); border-right: 1px solid #30363d; }
+    .region-low { width: 40%; background: rgba(46, 160, 67, 0.25); border-right: 1px solid var(--border-color); }
+    .region-med { width: 35%; background: rgba(210, 153, 34, 0.25); border-right: 1px solid var(--border-color); }
     .region-high { width: 25%; background: rgba(248, 81, 73, 0.25); }
 
     .meter-pointer-line {
@@ -309,15 +445,28 @@ st.markdown(r"""
         top: 0;
         bottom: 0;
         width: 3px;
-        background: #ffffff;
-        box-shadow: 0 0 4px #ffffff;
+        background: var(--text-heading);
+        box-shadow: 0 0 4px var(--text-heading);
     }
     .meter-labels {
         display: flex;
         justify-content: space-between;
         font-size: 0.7rem;
-        color: #8b949e;
+        color: var(--text-secondary);
         font-family: 'Roboto Mono', monospace;
+    }
+
+    /* Factor Row styling */
+    .factor-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.75rem;
+        color: var(--text-primary);
+        font-family: 'Roboto Mono', monospace;
+        margin-bottom: 2px;
+    }
+    .factor-name {
+        color: var(--text-primary);
     }
 
     /* Primary Action Buttons */
@@ -333,6 +482,23 @@ st.markdown(r"""
     }
     div.stButton > button:hover {
         background-color: #2ea043 !important;
+    }
+
+    /* Responsive Breakpoints */
+    @media (max-width: 768px) {
+        div.block-container {
+            padding-top: 4.25rem !important;
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        .header-title {
+            font-size: 1.6rem !important;
+        }
+        .pipeline-container {
+            flex-wrap: wrap;
+            gap: 4px;
+            font-size: 0.68rem;
+        }
     }
     </style>
 """, unsafe_allow_html=True)
@@ -393,7 +559,7 @@ st.sidebar.markdown("---")
 st.sidebar.subheader("Local Risk Engine Status")
 st.sidebar.markdown('<div class="status-badge"><div class="status-dot-pulse"></div>LOCAL RISK ENGINE ONLINE</div>', unsafe_allow_html=True)
 st.sidebar.markdown("""
-<div style="margin-top: 8px; font-size: 0.75rem; color: #8b949e;">
+<div style="margin-top: 8px; font-size: 0.75rem; color: var(--text-secondary);">
   • <b>MODEL:</b> RandomForest<br>
   • <b>ENGINE:</b> Local Python Engine<br>
   • <b>MODE:</b> Defense-Only Decisioning<br>
@@ -539,26 +705,27 @@ if page == "Dashboard & Single Transaction":
             banner_class = "banner-clear"
             banner_label = '<div class="dot-stable-green"></div> VERIFIED — CLEAR'
             risk_cat = "LOW RISK"
-            risk_color = "#3fb950"
-            node_style_clear = "background:#0d2d1d; color:#3fb950; border:1px solid #1b472c;"
-            node_style_esc = "color:#8b949e;"
-            node_style_hold = "color:#8b949e;"
+            risk_color = "var(--clear-text)"
+            node_style_clear = "background:var(--clear-bg); color:var(--clear-text); border:1px solid var(--clear-border);"
+            node_style_esc = "color:var(--text-primary);"
+            node_style_hold = "color:var(--text-primary);"
         elif decision == "ESCALATE":
             banner_class = "banner-escalate"
             banner_label = '<div class="pulse-dot-amber"></div> REVIEW REQUIRED — ESCALATE'
             risk_cat = "MEDIUM RISK"
-            risk_color = "#d29922"
-            node_style_clear = "color:#8b949e;"
-            node_style_esc = "background:#341a00; color:#d29922; border:1px solid #543000;"
-            node_style_hold = "color:#8b949e;"
+            risk_color = "var(--escalate-text)"
+            node_style_clear = "color:var(--text-primary);"
+            node_style_esc = "background:var(--escalate-bg); color:var(--escalate-text); border:1px solid var(--escalate-border);"
+            node_style_hold = "color:var(--text-primary);"
         else:
             banner_class = "banner-hold"
             banner_label = '<div class="pulse-dot-red"></div> HIGH RISK — HOLD'
             risk_cat = "HIGH RISK"
-            risk_color = "#f85149"
-            node_style_clear = "color:#8b949e;"
-            node_style_esc = "color:#8b949e;"
-            node_style_hold = "background:#3c1118; color:#f85149; border:1px solid #6e1a24;"
+            risk_color = "var(--hold-text)"
+            node_style_clear = "color:var(--text-primary);"
+            node_style_esc = "color:var(--text-primary);"
+            node_style_hold = "background:var(--hold-bg); color:var(--hold-text); border:1px solid var(--hold-border);"
+
 
         st.markdown(f'<div class="decision-banner {banner_class}">{banner_label}</div>', unsafe_allow_html=True)
 
@@ -578,7 +745,7 @@ if page == "Dashboard & Single Transaction":
         st.markdown(f"""
         <div class="meter-container">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                <span style="font-size:0.75rem; color:#8b949e; font-weight:600; font-family:'Roboto Mono',monospace;">PROBABILITY RISK METER</span>
+                <span style="font-size:0.75rem; color:var(--text-secondary); font-weight:600; font-family:'Roboto Mono',monospace;">PROBABILITY RISK METER</span>
                 <span style="font-family:'Roboto Mono',monospace; font-size:1.1rem; font-weight:700; color:{risk_color}; margin-left:auto;">{pointer_pct:.1f}%</span>
             </div>
             <div class="meter-bar-track">
@@ -620,16 +787,16 @@ if page == "Dashboard & Single Transaction":
 
         st.markdown(f"""
         <div style="margin-bottom: 8px;">
-            <div class="factor-row"><span class="factor-name">01 Amount Deviation Ratio ({calc_deviation_ratio}x)</span><span class="factor-val" style="color:#58a6ff">{'HIGH' if dev_risk > 0.6 else 'NORMAL'}</span></div>
-            <div style="background:#21262d; height:5px; border-radius:3px;"><div style="background:#58a6ff; width:{dev_risk*100}%; height:5px; border-radius:3px;"></div></div>
+            <div class="factor-row"><span class="factor-name">01 Amount Deviation Ratio ({calc_deviation_ratio}x)</span><span class="factor-val" style="color:var(--accent-blue)">{'HIGH' if dev_risk > 0.6 else 'NORMAL'}</span></div>
+            <div style="background:var(--meter-track); height:5px; border-radius:3px;"><div style="background:var(--accent-blue); width:{dev_risk*100}%; height:5px; border-radius:3px;"></div></div>
         </div>
         <div style="margin-bottom: 8px;">
-            <div class="factor-row"><span class="factor-name">02 Velocity ({velocity} txns/hr)</span><span class="factor-val" style="color:#d29922">{'HIGH' if vel_risk > 0.5 else 'NORMAL'}</span></div>
-            <div style="background:#21262d; height:5px; border-radius:3px;"><div style="background:#d29922; width:{vel_risk*100}%; height:5px; border-radius:3px;"></div></div>
+            <div class="factor-row"><span class="factor-name">02 Velocity ({velocity} txns/hr)</span><span class="factor-val" style="color:var(--escalate-text)">{'HIGH' if vel_risk > 0.5 else 'NORMAL'}</span></div>
+            <div style="background:var(--meter-track); height:5px; border-radius:3px;"><div style="background:var(--escalate-text); width:{vel_risk*100}%; height:5px; border-radius:3px;"></div></div>
         </div>
         <div style="margin-bottom: 8px;">
-            <div class="factor-row"><span class="factor-name">03 Device & Location Security</span><span class="factor-val" style="color:#f85149">{'FLAGGED' if (calc_loc_mismatch or calc_dev_change) else 'NORMAL'}</span></div>
-            <div style="background:#21262d; height:5px; border-radius:3px;"><div style="background:#f85149; width:{max(loc_risk, dev_c_risk)*100}%; height:5px; border-radius:3px;"></div></div>
+            <div class="factor-row"><span class="factor-name">03 Device & Location Security</span><span class="factor-val" style="color:var(--hold-text)">{'FLAGGED' if (calc_loc_mismatch or calc_dev_change) else 'NORMAL'}</span></div>
+            <div style="background:var(--meter-track); height:5px; border-radius:3px;"><div style="background:var(--hold-text); width:{max(loc_risk, dev_c_risk)*100}%; height:5px; border-radius:3px;"></div></div>
         </div>
         """, unsafe_allow_html=True)
 
@@ -686,11 +853,11 @@ elif page == "Batch Analysis":
         with c1:
             st.markdown(f'<div class="metric-tile"><div class="metric-value">{total_txns}</div><div class="metric-label">Total Processed</div></div>', unsafe_allow_html=True)
         with c2:
-            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:#3fb950">{clears}</div><div class="metric-label">CLEAR ({clears/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:var(--clear-text)">{clears}</div><div class="metric-label">CLEAR ({clears/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
         with c3:
-            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:#d29922">{escalates}</div><div class="metric-label">ESCALATE ({escalates/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:var(--escalate-text)">{escalates}</div><div class="metric-label">ESCALATE ({escalates/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
         with c4:
-            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:#f85149">{holds}</div><div class="metric-label">HOLD ({holds/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
+            st.markdown(f'<div class="metric-tile"><div class="metric-value" style="color:var(--hold-text)">{holds}</div><div class="metric-label">HOLD ({holds/total_txns*100:.1f}%)</div></div>', unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -701,16 +868,16 @@ elif page == "Batch Analysis":
 
         st.markdown("##### Population Action Distribution Breakdown")
         st.markdown(f"""
-        <div style="background:#161b22; border:1px solid #30363d; border-radius:6px; padding:12px; margin-bottom:16px;">
+        <div style="background:var(--bg-card); border:1px solid var(--border-color); border-radius:6px; padding:12px; margin-bottom:16px;">
             <div style="display:flex; height:12px; border-radius:4px; overflow:hidden; margin-bottom:8px;">
-                <div style="width:{clear_pct}%; background:#3fb950;" title="CLEAR"></div>
-                <div style="width:{esc_pct}%; background:#d29922;" title="ESCALATE"></div>
-                <div style="width:{hold_pct}%; background:#f85149;" title="HOLD"></div>
+                <div style="width:{clear_pct}%; background:var(--clear-text);" title="CLEAR"></div>
+                <div style="width:{esc_pct}%; background:var(--escalate-text);" title="ESCALATE"></div>
+                <div style="width:{hold_pct}%; background:var(--hold-text);" title="HOLD"></div>
             </div>
-            <div style="display:flex; justify-content:space-between; font-family:'Roboto Mono',monospace; font-size:0.75rem; color:#8b949e;">
-                <span style="color:#3fb950;">■ CLEAR: {clears} ({clear_pct:.1f}%)</span>
-                <span style="color:#d29922;">■ ESCALATE: {escalates} ({esc_pct:.1f}%)</span>
-                <span style="color:#f85149;">■ HOLD: {holds} ({hold_pct:.1f}%)</span>
+            <div style="display:flex; justify-content:space-between; font-family:'Roboto Mono',monospace; font-size:0.75rem; color:var(--text-secondary);">
+                <span style="color:var(--clear-text);">■ CLEAR: {clears} ({clear_pct:.1f}%)</span>
+                <span style="color:var(--escalate-text);">■ ESCALATE: {escalates} ({esc_pct:.1f}%)</span>
+                <span style="color:var(--hold-text);">■ HOLD: {holds} ({hold_pct:.1f}%)</span>
             </div>
         </div>
         """, unsafe_allow_html=True)
