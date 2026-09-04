@@ -201,6 +201,7 @@ $$
 
 ---
 
+```markdown
 ## 📜 Auditability & SHA-256 Hash Chain Verification
 
 Every risk decision evaluated by `FraudAgent` exports a cryptographically linked record to `outputs/audit_trail.csv`:
@@ -208,23 +209,19 @@ Every risk decision evaluated by `FraudAgent` exports a cryptographically linked
 ```python
 payload = f"{prev_hash}|{timestamp}|{txn_id}|{fraud_prob:.4f}|{orig_decision}|{final_decision}|{override_reason}|{top_feature}"
 record_hash = sha256(payload)
----
-```markdown
 ## 📡 FastAPI Backend Service Specifications
 
-| Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
-| :--- | :--- | :--- |
-| **Held-out Test Transactions** | `150` | 25% Stratified split baseline |
-| **True Positives (TP)** | `11` | True fraud correctly caught |
-| **False Positives (FP)** | `11` | Legitimate transactions flagged for review |
-| **False Negatives (FN)** | `12` | Uncaught fraud resulting in direct loss |
-| **Assumed Average Order Value** | `$100.00` | Standard order value assumption |
-| **Assumed Chargeback & Fee** | `$15.00` | Penalty fee per uncaught fraud incident |
-| **Assumed FP Friction Penalty** | `$5.00` | Unit friction penalty per escalated legit order |
-| **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
-| **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
-| **Illustrative Net Defense Impact** | **`+$1,210.00`** | Illustrative net defense impact under the stated assumptions |
-
+| Endpoint | Method | Description | Response Schema |
+| :--- | :--- | :--- | :--- |
+| `/api/v1/health` | `GET` | System health status, version, and model metadata | `HealthResponse` |
+| `/api/v1/risk/score` | `POST` | Evaluate single transaction risk score & decision | `RiskScoreResponse` |
+| `/api/v1/risk/batch` | `POST` | Execute population batch evaluation across dataset | `BatchResponse` |
+| `/api/v1/audit` | `GET` | Query compliance audit records from log | `List[Dict]` |
+| `/api/v1/audit/verify` | `GET` | Verify cryptographic SHA-256 audit chain integrity | `AuditVerifyResponse` |
+| `/api/v1/evaluation` | `GET` | Fetch held-out model evaluation metrics & importances | `EvaluationResponse` |
+| `/api/v1/evaluation/cost` | `GET` | Fetch false-positive cost analysis & net impact | `CostAnalysisResponse` |
+| `/docs` | `GET` | Interactive Swagger OpenAPI UI documentation | `HTML` |
+| `/openapi.json` | `GET` | Machine-readable OpenAPI spec | `JSON` |
 ## 💻 Streamlit Operations Dashboard
 
 The Streamlit interface (`app.py`) provides 5 dedicated workspaces:
@@ -370,7 +367,7 @@ streamlit run app.py
 ## 📈 Interpretation of Evaluation Metrics
 
 - **Precision (50.00%)**: Out of 22 total transactions flagged as fraud by the model, 11 were actual fraud.
-- **Recall (47.83%): Out of 23 actual fraudulent transactions in the held-out test set, 11 were correctly identified by the model.
+- **Recall (47.83%)**: Out of 23 actual fraudulent transactions in the held-out test set, 11 were correctly identified by the model.
 - **F1 Score (48.89%)**: Balanced metric reflecting harmonic mean of precision and recall.
 - **Accuracy (84.67%)**: 127 of 150 held-out test transactions were classified correctly.
 
