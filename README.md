@@ -145,7 +145,7 @@ RandomForestClassifier(
 
 ---
 
-## 📊 Held-Out Evaluation
+| **Evaluation Metric...
 
 The model was evaluated on a held-out test set comprising **150 transactions** (25% stratified split from 600 synthetic population records):
 
@@ -158,7 +158,7 @@ The model was evaluated on a held-out test set comprising **150 transactions** (
 
 ---
 
-## 🧩 Confusion Matrix
+| **Actual Class \ Predicted Class...
 
 Evaluated on held-out test set ($N = 150$):
 
@@ -167,9 +167,14 @@ Evaluated on held-out test set ($N = 150$):
 | **Actual Legitimate** | **TN = 116** (True Legit) | **FP = 11** (Legit Flagged) | 127 |
 | **Actual Fraud** | **FN = 12** (Uncaught Fraud) | **TP = 11** (Caught Fraud) | 23 |
 
-### Accuracy Calculation
-$$\text{Accuracy} = \frac{\text{TN} + \text{TP}}{N} = \frac{116 + 11}{150} = \frac{127}{150} = 0.8467 = 84.67\%$$
-
+Accuracy=TN+TPN=116+11150...
+$$
+\text{Accuracy} = \frac{TN + TP}{N}
+= \frac{116 + 11}{150}
+= \frac{127}{150}
+= 0.8467
+= 84.67\%
+$$
 ---
 
 ## ⚖️ False-Positive Cost Analysis
@@ -181,12 +186,12 @@ $$\text{Illustrative Net Defense Impact} = \text{Fraud Loss Prevented} - \text{F
 | Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
 | :--- | :--- | :--- |
 | **Held-out Test Transactions** | `150` | 25% Stratified split baseline |
-| **True Positives (TP)** | `11` | True fraud correctly caught |
-| **False Positives (FP)** | `11` | Legitimate transactions flagged for review |
-| **False Negatives (FN)** | `12` | Uncaught fraud resulting in direct loss |
-| **Assumed Average Order Value** | `$100.00` | Standard order value assumption |
-| **Assumed Chargeback & Fee** | `$15.00` | Penalty fee per uncaught fraud incident |
-| **Assumed FP Friction Penalty** | `$5.00` | Unit friction penalty per escalated legit order |
+| Evaluation Metric | Score | Percentage | Operational Description |
+|---|---:|---:|---|
+| **Accuracy** | `0.8467` | **84.67%** | Overall test classification accuracy (127/150 correct) |
+| **Precision** | `0.5000` | **50.00%** | Ratio of true positive fraud to total predicted fraud (11/22) |
+| **Recall** | `0.4783` | **47.83%** | Ratio of true positive fraud detected out of actual fraud (11/23) |
+| **F1 Score** | `0.4889` | **48.89%** | Harmonic mean of Precision and Recall |
 | **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
 | **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
 | **Illustrative Net Defense Impact** | **`+$1,210.00`** | Net financial loss reduction |
@@ -196,18 +201,22 @@ $$\text{Illustrative Net Defense Impact} = \text{Fraud Loss Prevented} - \text{F
 ---
 
 ## 📜 Auditability & SHA-256 Hash Chain Verification
-
-Every risk decision evaluated by `FraudAgent` exports a cryptographically linked record to `outputs/audit_trail.csv`:
-
-```text
+| Actual Class \ Predicted Class | Predicted Legitimate | Predicted Fraud | Total Actual |
+|---|---:|---:|---:|
+| **Actual Legitimate** | **TN = 116** (True Legit) | **FP = 11** (Legit Flagged) | 127 |
+| **Actual Fraud** | **FN = 12** (Uncaught Fraud) | **TP = 11** (Caught Fraud) | 23 |
 payload = f"{prev_hash}|{timestamp}|{txn_id}|{fraud_prob:.4f}|{orig_decision}|{final_decision}|{override_reason}|{top_feature}"
 record_hash = sha256(payload)
 ```
 
 - **Genesis Block**: Initiates with `prev_hash = "GENESIS"`.
-- **Chain Verification**: Modifying any record value invalidates subsequent hashes. `verify_audit_chain()` scans log integrity and detects tamper events.
-- **Deterministic Batch Export**: `run_agent_batch()` overwrites output target cleanly without record duplication, verifying **600/600 records** with **0 tamper events detected**.
-
+$$
+\text{Accuracy} = \frac{TN + TP}{N}
+= \frac{116 + 11}{150}
+= \frac{127}{150}
+= 0.8467
+= 84.67\%
+$$
 ---
 
 ## 📡 FastAPI Backend Service Specifications
@@ -239,15 +248,13 @@ The Streamlit interface (`app.py`) provides 5 dedicated workspaces:
 5. **`05 MODEL EVIDENCE`**: Laboratory workspace displaying held-out test set metrics, confusion matrix breakdown, cost analysis, and automated test suite evidence.
 
 ---
-
 ## 🎭 Demonstration Scenarios
 
 Deterministic demo scenarios provided in the console for evaluation:
 
-- **Scenario 1 — Standard Transaction (`CLEAR`)**: Low amount ($350.00), normal velocity, matching location, matching device $\rightarrow$ Low probability ($P < 0.40$), auto-approved.
-- **Scenario 2 — Elevated-Risk Transaction (`ESCALATE`)**: Moderate amount ($450.00), night window, minor deviation $\rightarrow$ Moderate probability ($0.40 \le P < 0.75$), routed for additional verification / review.
-- **Scenario 3 — High amount ($1,280.00), 6.4x merchant average deviation, night purchase, location mismatch, device change → High probability (P ≥ 0.75), assigned a high-risk HOLD decision by the risk policy.
-
+- **Scenario 1 — Standard Transaction (`CLEAR`)**: Low amount (`$350.00`), normal velocity, matching location, matching device → Low probability (`P < 0.40`), auto-approved.
+- **Scenario 2 — Elevated-Risk Transaction (`ESCALATE`)**: Moderate amount (`$450.00`), night window, minor deviation → Moderate probability (`0.40 ≤ P < 0.75`), routed for additional verification / review.
+- **Scenario 3 —  High-Risk Transaction (`HOLD`)**: High amount (`$1,280.00`), 6.4x merchant average deviation, night purchase, location mismatch, device change → High probability (`P ≥ 0.75`), assigned a high-risk HOLD decision by the risk policy.
 *Note: Demonstration scenarios utilize synthetic input data for verification.*
 
 ---
