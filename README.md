@@ -246,7 +246,7 @@ Deterministic demo scenarios provided in the console for evaluation:
 
 - **Scenario 1 — Standard Transaction (`CLEAR`)**: Low amount ($350.00), normal velocity, matching location, matching device $\rightarrow$ Low probability ($P < 0.40$), auto-approved.
 - **Scenario 2 — Elevated-Risk Transaction (`ESCALATE`)**: Moderate amount ($450.00), night window, minor deviation $\rightarrow$ Moderate probability ($0.40 \le P < 0.75$), routed for additional verification / review.
-- **Scenario 3 — High-Risk Transaction (`HOLD`)**: High amount ($1,280.00), 6.4x merchant average deviation, night purchase, location mismatch, device change $\rightarrow$ High probability ($P \ge 0.75$), assigned high-risk HOLD decision.
+- **Scenario 3 — High amount ($1,280.00), 6.4x merchant average deviation, night purchase, location mismatch, device change → High probability (P ≥ 0.75), assigned a high-risk HOLD decision by the risk policy.
 
 *Note: Demonstration scenarios utilize synthetic input data for verification.*
 
@@ -375,7 +375,7 @@ streamlit run app.py
 ## 📈 Interpretation of Evaluation Metrics
 
 - **Precision (50.00%)**: Out of 22 total transactions flagged as fraud by the model, 11 were actual fraud.
-- **Recall (47.83%)**: Out of 23 actual fraudulent transactions in the held-out test set, 11 were correctly identified and prevented.
+- **Recall (47.83%): Out of 23 actual fraudulent transactions in the held-out test set, 11 were correctly identified by the model.
 - **F1 Score (48.89%)**: Balanced metric reflecting harmonic mean of precision and recall.
 - **Accuracy (84.67%)**: 127 of 150 held-out test transactions were classified correctly.
 
@@ -389,9 +389,9 @@ streamlit run app.py
 | **2. Fraud Detection Engine** | Working class-balanced Random Forest classifier (`fraud-rf-v1`). |
 | **3. Measured Performance** | Held-out Precision (`50.00%`), Recall (`47.83%`), F1 (`48.89%`), Accuracy (`84.67%`). |
 | **4. Held-Out Evaluation** | 25% Stratified test split (150 transactions out of 600). |
-| **5. False-Positive Analysis** | Measured 11 FPs ($55.00 cost) vs 11 TPs ($1,265.00 prevented) $\rightarrow$ `+$1,210.00` Net Impact. |
+| **5. False-Positive Analysis** | 11 FPs ($55 assumed friction cost) vs 11 TPs ($1,265 illustrative prevented-loss value) → +$1,210 illustrative net defense impact. |
 | **6. Bounded Decisions** | Operational thresholds (`CLEAR` < 0.40 <= `ESCALATE` < 0.75 <= `HOLD`). |
-| **7. Explainability** | Real-time feature weight attribution per transaction. |
+| **7. Explainability** | Real-time identification of the strongest risk-driving features per transaction.|
 | **8. Auditability** | Sequential SHA-256 hash chain logging across 600 verified records with 0 tamper events. |
 | **9. REST API** | FastAPI backend service with Swagger docs (`/docs`). |
 | **10. UI Terminal** | Deployed Streamlit dashboard with 5 operational workspaces. |
