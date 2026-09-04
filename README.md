@@ -177,11 +177,14 @@ $$
 
 To measure operational trade-offs, false-positive friction costs are evaluated against prevented fraud loss:
 
-$$\text{Illustrative Net Defense Impact} = \text{Fraud Loss Prevented} - \text{False Positive Cost}$$
+$$
+\text{Illustrative Net Defense Impact}
+=
+\text{Fraud Loss Prevented}
+-
+\text{False Positive Cost}
+$$
 
-| Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
-| :--- | :--- | :--- |
-| **Held-out Test Transactions** | `150` | 25% Stratified split baseline |
 | Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
 | :--- | :--- | :--- |
 | **Held-out Test Transactions** | `150` | 25% Stratified split baseline |
@@ -193,10 +196,7 @@ $$\text{Illustrative Net Defense Impact} = \text{Fraud Loss Prevented} - \text{F
 | **Assumed FP Friction Penalty** | `$5.00` | Unit friction penalty per escalated legit order |
 | **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
 | **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
-| **Fraud Loss Prevented** | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
-| **False Positive Cost** | **`$55.00`** | `11 FP × $5.00` friction penalty |
 | **Illustrative Net Defense Impact** | **`+$1,210.00`** | Illustrative net defense impact under the stated assumptions |
-
 > ⚡ *Illustrative evaluation assumption — not observed Razorpay production savings.*
 
 ---
@@ -208,7 +208,8 @@ Every risk decision evaluated by `FraudAgent` exports a cryptographically linked
 ```python
 payload = f"{prev_hash}|{timestamp}|{txn_id}|{fraud_prob:.4f}|{orig_decision}|{final_decision}|{override_reason}|{top_feature}"
 record_hash = sha256(payload)
-
+---
+```markdown
 ## 📡 FastAPI Backend Service Specifications
 
 | Cost Analysis Parameter | Metric Value | Operational Assumption / Calculation |
