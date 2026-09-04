@@ -89,6 +89,16 @@ class TestBackendAPI(unittest.TestCase):
         self.assertIsNone(data["tampered_index"])
         self.assertGreater(data["total_records"], 0)
 
+    def test_08_cost_analysis_endpoint(self):
+        response = self.client.get("/api/v1/evaluation/cost")
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertIn("false_positive_count", data)
+        self.assertIn("illustrative_total_fp_cost", data)
+        self.assertIn("false_negative_value_exposure", data)
+        self.assertEqual(data["model_version"], "fraud-rf-v1")
+
 if __name__ == "__main__":
     unittest.main()
+
 

@@ -15,7 +15,8 @@ from backend.schemas import (
     RiskScoreResponse,
     BatchResponse,
     EvaluationResponse,
-    AuditVerifyResponse
+    AuditVerifyResponse,
+    CostAnalysisResponse
 )
 from backend.services import RiskEngineService
 
@@ -131,4 +132,19 @@ def get_evaluation():
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Evaluation Metrics Retrieval Error: {str(err)}"
         )
+
+@app.get("/api/v1/evaluation/cost", response_model=CostAnalysisResponse, tags=["Model Intelligence"])
+def get_cost_analysis():
+    """
+    Expose false-positive cost analysis and false-negative exposure metrics.
+    """
+    try:
+        result = RiskEngineService.get_cost_analysis()
+        return CostAnalysisResponse(**result)
+    except Exception as err:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Cost Analysis Retrieval Error: {str(err)}"
+        )
+
 

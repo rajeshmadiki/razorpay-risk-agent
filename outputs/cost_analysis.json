@@ -1,0 +1,18 @@
+{
+  "model_version": "fraud-rf-v1",
+  "test_size": 150,
+  "true_positive_count": 11,
+  "true_negative_count": 116,
+  "false_positive_count": 11,
+  "false_positive_rate": 0.0866,
+  "illustrative_cost_per_fp": 5.0,
+  "illustrative_total_fp_cost": 55.0,
+  "false_negative_count": 12,
+  "false_negative_rate": 0.5217,
+  "illustrative_avg_txn_amount": 100.0,
+  "illustrative_chargeback_fee": 15.0,
+  "false_negative_value_exposure": 1380.0,
+  "illustrative_fraud_loss_prevented": 1265.0,
+  "illustrative_net_defense_roi": 1210.0,
+  "disclaimer": "Illustrative evaluation assumption \u2014 not Razorpay production cost."
+}

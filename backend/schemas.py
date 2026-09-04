@@ -67,3 +67,22 @@ class AuditVerifyResponse(BaseModel):
     tampered_index: Optional[int] = Field(None, example=None)
     message: str = Field(..., example="Audit chain integrity verified. All 600 records cryptographically validated.")
 
+class CostAnalysisResponse(BaseModel):
+    model_version: str = Field(..., example="fraud-rf-v1")
+    test_size: int = Field(..., example=150)
+    true_positive_count: int = Field(..., example=11)
+    true_negative_count: int = Field(..., example=116)
+    false_positive_count: int = Field(..., example=11)
+    false_positive_rate: float = Field(..., example=0.0866)
+    illustrative_cost_per_fp: float = Field(..., example=5.0)
+    illustrative_total_fp_cost: float = Field(..., example=55.0)
+    false_negative_count: int = Field(..., example=12)
+    false_negative_rate: float = Field(..., example=0.5217)
+    illustrative_avg_txn_amount: float = Field(..., example=100.0)
+    illustrative_chargeback_fee: float = Field(..., example=15.0)
+    false_negative_value_exposure: float = Field(..., example=1380.0)
+    illustrative_fraud_loss_prevented: float = Field(..., example=1265.0)
+    illustrative_net_defense_roi: float = Field(..., example=1210.0)
+    disclaimer: str = Field(..., example="Illustrative evaluation assumption — not Razorpay production cost.")
+
+

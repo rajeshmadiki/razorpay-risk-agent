@@ -160,8 +160,21 @@ class RiskEngineService:
             "precision": round(metrics["precision"], 4),
             "recall": round(metrics["recall"], 4),
             "f1_score": round(metrics["f1"], 4),
-            "accuracy": 0.8500,
+            "accuracy": round(metrics["accuracy"], 4),
             "evaluation_split": "25% Stratified Held-out Test Set",
             "feature_importances": {k: round(v, 4) for k, v in feat_importances.items()}
         }
+
+    @classmethod
+    def get_cost_analysis(cls) -> Dict[str, Any]:
+        cost_file = os.path.join(PROJECT_ROOT, "outputs", "cost_analysis.json")
+        if os.path.exists(cost_file):
+            import json
+            with open(cost_file, "r") as f:
+                return json.load(f)
+
+        agent, metrics, feat_importances, df = cls.get_agent()
+        from src.model import export_cost_analysis
+        return export_cost_analysis(metrics)
+
 
