@@ -13,6 +13,6 @@
   "illustrative_chargeback_fee": 15.0,
   "false_negative_value_exposure": 1380.0,
   "illustrative_fraud_loss_prevented": 1265.0,
-  "illustrative_net_defense_roi": 1210.0,
-  "disclaimer": "Illustrative evaluation assumption \u2014 not Razorpay production cost."
+  "illustrative_net_defense_impact": 1210.0,
+  "disclaimer": "Illustrative evaluation assumption \u2014 not observed Razorpay production savings."
 }

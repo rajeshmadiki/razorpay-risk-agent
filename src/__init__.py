@@ -1,3 +1,3 @@
 """
-Fraud Verifier & Auto-Responder Agent Package
+Fraud Risk Decision Engine Package
 """

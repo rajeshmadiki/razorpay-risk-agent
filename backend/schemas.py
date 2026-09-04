@@ -82,7 +82,7 @@ class CostAnalysisResponse(BaseModel):
     illustrative_chargeback_fee: float = Field(..., example=15.0)
     false_negative_value_exposure: float = Field(..., example=1380.0)
     illustrative_fraud_loss_prevented: float = Field(..., example=1265.0)
-    illustrative_net_defense_roi: float = Field(..., example=1210.0)
-    disclaimer: str = Field(..., example="Illustrative evaluation assumption — not Razorpay production cost.")
+    illustrative_net_defense_impact: float = Field(..., example=1210.0)
+    disclaimer: str = Field(..., example="Illustrative evaluation assumption — not observed Razorpay production savings.")
 
 

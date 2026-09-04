@@ -152,7 +152,7 @@ def export_cost_analysis(metrics: Dict[str, Any], output_dir: str = "outputs") -
 
     fn_exposure = round(fn * unit_fraud_loss, 2)
     fraud_prevented = round(tp * unit_fraud_loss, 2)
-    net_roi = round(fraud_prevented - illustrative_total_fp_cost, 2)
+    net_impact = round(fraud_prevented - illustrative_total_fp_cost, 2)
 
     cost_data = {
         "model_version": metrics.get("model_version", MODEL_VERSION),
@@ -169,9 +169,10 @@ def export_cost_analysis(metrics: Dict[str, Any], output_dir: str = "outputs") -
         "illustrative_chargeback_fee": illustrative_chargeback_fee,
         "false_negative_value_exposure": fn_exposure,
         "illustrative_fraud_loss_prevented": fraud_prevented,
-        "illustrative_net_defense_roi": net_roi,
-        "disclaimer": "Illustrative evaluation assumption — not Razorpay production cost."
+        "illustrative_net_defense_impact": net_impact,
+        "disclaimer": "Illustrative evaluation assumption — not observed Razorpay production savings."
     }
+
 
     cost_json_path = os.path.join(output_dir, "cost_analysis.json")
     with open(cost_json_path, "w") as f:

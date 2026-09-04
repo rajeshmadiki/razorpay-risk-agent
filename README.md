@@ -1,7 +1,7 @@
 # 🛡️ Razorpay AI Risk Manager
 **Razorpay AI Buildathon 2026 — Track 02: AI Risk Manager**
 
-An end-to-end, submission-ready AI Risk Management & Fraud Auto-Responder platform. Built with a **FastAPI backend microservice**, a **Streamlit visual dashboard**, a class-balanced **RandomForest risk model (`fraud-rf-v1`)**, defensive policy enforcement, a **rate-limiting safety gate**, **cryptographic SHA-256 tamper-evident audit logging**, and **empirical threshold sensitivity analysis**.
+An end-to-end defensive fraud-risk decision engine for Razorpay AI Buildathon 2026 Track 02. It combines a Random Forest fraud classifier, explicit risk thresholds, a safety gate, explainable risk signals, FastAPI APIs, and a tamper-evident decision audit trail using synthetic transaction data.
 
 [![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://razorpay-risk-agent.streamlit.app/)
 
@@ -39,9 +39,9 @@ An end-to-end, submission-ready AI Risk Management & Fraud Auto-Responder platfo
 
 ### Key Components
 
-- **FastAPI Microservice Backend (`backend/`)**: Standard REST API architecture separating business/risk logic from UI presentation.
+- **FastAPI Backend Service (`backend/`)**: Standard REST API architecture separating business/risk logic from UI presentation.
 - **RandomForest Fraud Engine (`fraud-rf-v1` in `src/model.py`)**: Trained on synthetic financial transaction data (~600 records, 15.5% fraud rate) with domain-specific risk signals.
-- **Defensive Decision Engine (`src/agent.py`)**: Classifies risk into explicit action policies (`CLEAR`, `ESCALATE`, `HOLD`), evaluates feature risk contributions, and writes immutable audit logs.
+- **Defensive Decision Engine (`src/agent.py`)**: Classifies risk into explicit action policies (`CLEAR`, `ESCALATE`, `HOLD`), evaluates feature risk contributions, and writes tamper-evident SHA-256 decision audit logs.
 - **Dynamic Safety Gate**: Automatic rate-limiting circuit breaker that converts excessive `HOLD` decisions to `ESCALATE` if running hold rate exceeds 25%.
 - **Cryptographic SHA-256 Audit Chain Verification (`verify_audit_chain`)**: Every audit log record contains a sequential cryptographic SHA-256 block hash linking to the previous record for tamper detection.
 - **Threshold Sensitivity Analysis (`outputs/threshold_analysis.csv`)**: Empirical evaluation across decision thresholds $P \in [0.40, 0.90]$.
@@ -121,7 +121,7 @@ streamlit run app.py
 ```bash
 python -m unittest discover -s tests
 ```
-Runs 12 automated unit & API test cases verifying health endpoints, single scoring, batch evaluation, SHA-256 audit chain verification, tamper detection, and safety gate triggers.
+Runs 13 automated unit & API tests (**13 passed · 0 failed**) verifying health endpoints, single scoring, batch evaluation, cost analysis, SHA-256 audit chain verification, tamper detection, and safety gate triggers.
 
 ---
 
@@ -142,8 +142,8 @@ Runs 12 automated unit & API test cases verifying health endpoints, single scori
 
 | Risk Score ($P$) | Default Action | Safety Gate Action (Hold Rate > 25%) | Operational Description |
 | :--- | :--- | :--- | :--- |
-| **$P \ge 0.75$** | `HOLD` | Downgraded to `ESCALATE` | High risk — transaction frozen for intervention |
-| **$0.40 \le P < 0.75$** | `ESCALATE` | `ESCALATE` | Moderate risk — routed for 2FA / step-up verification |
+| **$P \ge 0.75$** | `HOLD` | Downgraded to `ESCALATE` | High risk — routed for high-risk HOLD decision |
+| **$0.40 \le P < 0.75$** | `ESCALATE` | `ESCALATE` | Moderate risk — routed for additional verification / review |
 | **$P < 0.40$** | `CLEAR` | `CLEAR` | Low risk — transaction auto-approved |
 
 > **🛡️ Safety Circuit Breaker**: To prevent catastrophic automated blockages during false-positive spikes or malicious traffic bursts, the `FraudAgent` tracks the running `HOLD` rate. If the hold rate exceeds **25%** across processed transactions (after a 10-transaction warm-up window), all subsequent high-risk transactions are downgraded from `HOLD` to `ESCALATE` for human verification.
@@ -169,7 +169,7 @@ Evaluated on held-out test dataset (150 transactions / 25% stratified split, mod
 ### Evaluation Metrics (`MEASURED`)
 | Metric | Score | Percentage | Description |
 | :--- | :--- | :--- | :--- |
-| **Accuracy** | `0.8500` | 85.00% | Overall test classification accuracy |
+| **Accuracy** | `0.8467` | 84.67% | Overall test classification accuracy |
 | **Precision** | `0.5000` | 50.00% | Ratio of true positive fraud to total predicted fraud |
 | **Recall** | `0.4783` | 47.83% | Ratio of true positive fraud detected out of total actual fraud |
 | **F1 Score** | `0.4889` | 48.89% | Harmonic mean of Precision and Recall |
@@ -204,14 +204,16 @@ Evaluated on held-out test dataset (150 transactions / 25% stratified split, mod
 | :--- | :--- | :--- | :--- |
 | **Held-out Test Transactions** | `MEASURED` | `150` transactions | 25% Stratified split evaluation baseline |
 | **True Positives (TP)** | `MEASURED` | `11` transactions | True fraud correctly caught and prevented |
-| **False Positives (FP)** | `MEASURED` | `11` transactions | Legitimate transactions flagged for step-up review |
+| **False Positives (FP)** | `MEASURED` | `11` transactions | Legitimate transactions flagged for additional review |
 | **False Negatives (FN)** | `MEASURED` | `12` transactions | Uncaught fraud resulting in direct loss |
 | **Average Transaction Amount** | `ASSUMED` | `$100.00` | Standard order value assumption |
 | **Chargeback & Penalty Fee** | `ASSUMED` | `$15.00` | Fee per uncaught fraud incident |
 | **FP Friction Penalty Cost** | `ASSUMED` | `$5.00` | Customer friction impact per escalated legit order |
 | **Fraud Loss Prevented** | `SYNTHESIZED` | **`$1,265.00`** | `11 TP × ($100 + $15)` saved |
 | **False Positive Cost** | `SYNTHESIZED` | **`$55.00`** | `11 FP × $5.00` friction cost |
-| **Net Defense ROI** | `SYNTHESIZED` | **`+$1,210.00 Net`** | Direct net merchant loss reduction |
+| **Illustrative Net Defense Impact** | `SYNTHESIZED` | **`+$1,210.00 Net`** | Direct net merchant loss reduction |
+
+> *Illustrative evaluation assumption — not observed Razorpay production savings.*
 
 ---
 
@@ -235,10 +237,10 @@ Evaluated on held-out test dataset (150 transactions / 25% stratified split, mod
 | **6. How is the risk score generated?** | Class-balanced `RandomForest` classifier (`fraud-rf-v1`) predicts continuous raw fraud probability $P \in [0, 1]$. |
 | **7. How does the decision policy work?** | Strict thresholding mapping raw probability to operational action rules. |
 | **8. What happens for CLEAR?** | $P < 0.40 \rightarrow$ Transaction auto-approved without customer friction. |
-| **9. What happens for ESCALATE?** | $0.40 \le P < 0.75 \rightarrow$ Step-up 2FA / OTP verification requested. |
-| **10. What happens for HOLD?** | $P \ge 75\% \rightarrow$ High-risk payment frozen for manual intervention. |
+| **9. What happens for ESCALATE?** | $0.40 \le P < 0.75 \rightarrow$ Additional verification / review requested. |
+| **10. What happens for HOLD?** | $P \ge 75\% \rightarrow$ High-risk HOLD decision assigned for review. |
 | **11. Is there a held-out test set?** | Yes, 25% stratified test split (150 transactions out of 600). |
-| **12. What are precision and recall?** | Precision: **`0.5000`** (50.0%), Recall: **`0.4783`** (47.83%), F1: **`0.4889`**, Accuracy: **`0.8500`**. |
+| **12. What are precision and recall?** | Precision: **`0.5000`** (50.0%), Recall: **`0.4783`** (47.83%), F1: **`0.4889`**, Accuracy: **`0.8467`**. |
 | **13. What is the false-positive cost?** | Measured 11 FPs out of 150 test transactions ($55.00 assumed friction cost vs $1,265.00 fraud prevented). |
 | **14. What is measured vs assumed?** | `MEASURED` = classification counts, precision, recall, F1, accuracy, hold rate. `ASSUMED` = avg transaction value ($100), chargeback fee ($15), friction penalty ($5). |
 | **15. Is there a safety gate?** | Yes, automatic circuit breaker downgrading `HOLD` to `ESCALATE` if running hold rate exceeds 25% (after 10-txn warm-up). |

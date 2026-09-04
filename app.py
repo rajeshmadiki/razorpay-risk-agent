@@ -11,15 +11,9 @@ PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-import importlib
-try:
-    import src.agent
-    importlib.reload(src.agent)
-    from src.model import load_data, train_fraud_model, FEATURE_COLS
-    from src.agent import FraudAgent, run_agent_batch, verify_audit_chain
-except Exception as e:
-    st.error(f"Initialization Error: Unable to import core risk agent modules. Details: {e}")
-    st.stop()
+from src.model import load_data, train_fraud_model, FEATURE_COLS
+from src.agent import FraudAgent, run_agent_batch, verify_audit_chain
+
 
 
 
@@ -699,7 +693,7 @@ if page == "01  RISK CONSOLE":
         <div class="editorial-card">
             <div class="editorial-card-label">ESCALATE</div>
             <div class="editorial-card-number" style="color:var(--escalate-text) !important">{esc_cnt}</div>
-            <div class="editorial-card-sub">{esc_cnt/tot_cnt*100:.1f}% Step-Up 2FA</div>
+            <div class="editorial-card-sub">{esc_cnt/tot_cnt*100:.1f}% Escalated Review</div>
         </div>
         ''', unsafe_allow_html=True)
     with sum_col4:
@@ -707,7 +701,7 @@ if page == "01  RISK CONSOLE":
         <div class="editorial-card">
             <div class="editorial-card-label">HOLD</div>
             <div class="editorial-card-number" style="color:var(--hold-text) !important">{hold_cnt}</div>
-            <div class="editorial-card-sub">{hold_cnt/tot_cnt*100:.1f}% Intervention Frozen</div>
+            <div class="editorial-card-sub">{hold_cnt/tot_cnt*100:.1f}% High-Risk HOLD</div>
         </div>
         ''', unsafe_allow_html=True)
 
@@ -1059,7 +1053,7 @@ elif page == "02  BATCH ANALYSIS":
             - **Precision**: `{model_metrics['precision']:.4f}` ({model_metrics['precision']*100:.1f}%)
             - **Recall**: `{model_metrics['recall']:.4f}` ({model_metrics['recall']*100:.1f}%)
             - **F1 Score**: `{model_metrics['f1']:.4f}` ({model_metrics['f1']*100:.1f}%)
-            - **Accuracy**: `{model_metrics.get('accuracy', 0.8500):.4f}` ({model_metrics.get('accuracy', 0.8500)*100:.1f}%)
+            - **Accuracy**: `{model_metrics.get('accuracy', 0.8467):.4f}` ({model_metrics.get('accuracy', 0.8467)*100:.2f}%)
             - **Evaluation Split**: `25% Stratified Test Split` (150 Transactions)
             """)
 
@@ -1073,7 +1067,7 @@ elif page == "02  BATCH ANALYSIS":
             - **`ASSUMED` False Positive Friction Cost**: `$5.00` per escalated order
             - **`MEASURED + ASSUMED` Fraud Loss Saved**: `$1,265.00`
             - **`MEASURED + ASSUMED` FP Friction Cost**: `$55.00`
-            - **`MEASURED + ASSUMED` Net Defense ROI**: **`+$1,210.00 Saved`**
+            - **`MEASURED + ASSUMED` Illustrative Net Defense Impact**: **`+$1,210.00 Saved`**
             """)
 
         # THRESHOLD SENSITIVITY ANALYSIS TABLE
@@ -1127,7 +1121,7 @@ elif page == "03  AUDIT LEDGER":
     <div class="top-system-bar">
         <div class="system-bar-left">
             <span class="sys-code">03 / EVIDENCE</span>
-            <span class="sys-status-pill"><span class="pulse-dot"></span> IMMUTABLE AUDIT LOG</span>
+            <span class="sys-status-pill"><span class="pulse-dot"></span> TAMPER-EVIDENT AUDIT LOG</span>
         </div>
     </div>
 
@@ -1226,10 +1220,10 @@ elif page == "04  SYSTEM ARCHITECTURE":
         ("6. How is the risk score generated?", "Class-balanced RandomForest classifier predicts continuous raw fraud probability P ∈ [0, 1]."),
         ("7. How does the decision policy work?", "Strict thresholding mapping raw probability to operational action rules."),
         ("8. What happens for CLEAR?", "P < 0.40 → Transaction auto-approved without customer friction."),
-        ("9. What happens for ESCALATE?", "0.40 ≤ P < 0.75 → Step-up 2FA / OTP verification requested."),
-        ("10. What happens for HOLD?", "P ≥ 0.75 → High-risk payment frozen for manual intervention."),
+        ("9. What happens for ESCALATE?", "0.40 ≤ P < 0.75 → Additional verification / review requested."),
+        ("10. What happens for HOLD?", "P ≥ 0.75 → High-risk HOLD decision assigned for review."),
         ("11. Is there a held-out test set?", "Yes, 25% stratified test split (150 transactions out of 600)."),
-        ("12. What are precision and recall?", "Precision: 0.5000 (50.0%), Recall: 0.4783 (47.83%), F1: 0.4889, Accuracy: 0.8500."),
+        ("12. What are precision and recall?", "Precision: 0.5000 (50.0%), Recall: 0.4783 (47.83%), F1: 0.4889, Accuracy: 0.8467."),
         ("13. What is the false-positive cost?", "Measured 11 FPs out of 150 test transactions ($55.00 assumed friction cost vs $1,265.00 fraud prevented)."),
         ("14. What is measured vs assumed?", "MEASURED = classification counts, precision, recall, F1, accuracy, hold rate. ASSUMED = avg transaction value ($100), chargeback fee ($15), friction penalty ($5)."),
         ("15. Is there a safety gate?", "Yes, automatic circuit breaker downgrading HOLD to ESCALATE if running hold rate exceeds 25% (after 10-txn warm-up)."),
@@ -1272,7 +1266,7 @@ elif page == "05  MODEL EVIDENCE":
         st.markdown(f"""
         - **Model Identifier**: `fraud-rf-v1` (RandomForestClassifier)
         - **Evaluation Split**: `25% Stratified Test Split` (150 Transactions out of 600)
-        - **Accuracy**: `{model_metrics.get('accuracy', 0.8500):.4f}` (**85.00%**)
+        - **Accuracy**: `{model_metrics.get('accuracy', 0.8467):.4f}` (**84.67%**)
         - **Precision**: `{model_metrics['precision']:.4f}` (**50.00%**)
         - **Recall**: `{model_metrics['recall']:.4f}` (**47.83%**)
         - **F1 Score**: `{model_metrics['f1']:.4f}` (**48.89%**)
@@ -1319,13 +1313,13 @@ elif page == "05  MODEL EVIDENCE":
     with c4:
         st.markdown('''
         <div class="editorial-card">
-            <div class="editorial-card-label">NET DEFENSE ROI</div>
+            <div class="editorial-card-label">NET DEFENSE IMPACT</div>
             <div class="editorial-card-number" style="color:var(--clear-text) !important">+$1,210.00</div>
             <div class="editorial-card-sub">Net Merchant Loss Reduction</div>
         </div>
         ''', unsafe_allow_html=True)
 
-    st.caption("⚡ *Note: Unit cost parameters ($100 avg order, $15 chargeback fee, $5 friction cost) are illustrative evaluation assumptions.*")
+    st.caption("⚡ *Note: Illustrative evaluation assumption — not observed Razorpay production savings.*")
 
     st.markdown("---")
 
